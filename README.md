@@ -1,17 +1,17 @@
-🚧 **Work in Progress** 🚧
+# 🚧 **Work in Progress** 🚧
 
 ## NeighborHood Crawler
 
-Crawls the ethereum network, finding nodes and appending a list of neighbors to each. 
+Crawls the ethereum network, finding nodes and appending a list of neighbors to each.
 
 This is a very early Proof of Concept. And it currently is not functioning.
 
 ### How it works
 
-The ```devp2p discv4 crawl``` command will produce a JSON file of all of the nodes it finds. 
-So far this script does
+The ```devp2p discv4 crawl``` command will produce a JSON file of all of the nodes it finds.
+So far this script...
 
-  1. Injest that JSON list of Nodes
+  1. Ingests that JSON list of Nodes
   2. Crawl through each list, gathering it's neighbors
   3. Appends that list of neighbors to a new "neighbors" field
   4. Print out the modified json list.
