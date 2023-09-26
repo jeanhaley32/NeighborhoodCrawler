@@ -22,7 +22,7 @@ This still needs debugging.
 ### Notes
 
 This is a very simple proof of concept.
-A future iteration of this POC would would:
+A future iteration of this POC would:
 
   1. Use parallelism (goroutines) to traverse the list faster.
   2. Fold in the Crawler functionality of the devp2p library to combine the pipeline of [DHT](https://en.wikipedia.org/wiki/Distributed_hash_table) Traversal and Node Discover with neighborhood association.
