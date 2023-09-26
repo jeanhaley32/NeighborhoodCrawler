@@ -82,7 +82,7 @@ func main() {
 		entry.Neighbors = neighbors
 		runs++
 		nodeTrunc := fmt.Sprintf("%v...%v", entry.Record[5:10], entry.Record[len(entry.Record)-5:])
-		fmt.Print(clearScreen())
+		clearScreen()
 		fmt.Printf("ID: %v \nFound %v neighbors\nrun %v/%v\n", nodeTrunc, len(neighbors), runs, len(entries))
 	}
 	// write the entries map to the writefile.
@@ -287,6 +287,7 @@ func getNeighbors(enr string) []enode.Node {
 	return neighbors
 }
 
-func clearScreen() string {
-	return "\033[H\033[2J"
+// Clears Terminal Screen.
+func clearScreen() {
+	fmt.Print("\033[H\033[2J")
 }
