@@ -12,9 +12,9 @@ The ```devp2p discv4 crawl``` command will produce a JSON file of all of the nod
 So far this script...
 
   1. Ingests that JSON list of Nodes
-  2. Crawl through each list, gathering it's neighbors
+  2. Crawls through each list, gathering it's neighbors
   3. Appends that list of neighbors to a new "neighbors" field
-  4. Print out the modified json list.
+  4. Prints out the modified json list.
 
 I was able to create a version of this code that worked when fed one node. But for some reason i'm unable to get he same results here.
 This still needs debugging.
