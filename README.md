@@ -1,6 +1,6 @@
-# 🚧 **Work in Progress** 🚧
+# NeighborHood Crawler
 
-## NeighborHood Crawler
+## 🚧 **Work in Progress** 🚧
 
 Crawls the ethereum network, finding nodes and appending a list of neighbors to each.
 
