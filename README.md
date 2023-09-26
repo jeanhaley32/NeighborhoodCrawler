@@ -16,7 +16,7 @@ So far this script...
   3. Appends that list of neighbors to a new "neighbors" field
   4. Prints out the modified json list.
 
-I was able to create a version of this code that worked when fed one node. But for some reason i'm unable to get he same results here.
+I was able to create a version of this code that worked when fed one node. But for some reason i'm unable to get those same results here.
 This still needs debugging.
 
 ### Notes
