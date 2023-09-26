@@ -1,4 +1,4 @@
-module node-neighbor-finder
+module NeighborhoodCrawler
 
 go 1.21.1
 
