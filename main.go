@@ -81,8 +81,9 @@ func main() {
 		neighbors := getNeighbors(entry.Record)
 		entry.Neighbors = neighbors
 		runs++
-		// fmt.Print(clearScreen())
-		fmt.Printf("ID: %v \n Runs: %d\n Found %v neighbors\n", entry.Record, runs, len(neighbors))
+		nodeTrunc := fmt.Sprintf("%v...%v", entry.Record[5:10], entry.Record[len(entry.Record)-5:])
+		fmt.Print(clearScreen())
+		fmt.Printf("ID: %v \nFound %v neighbors\nrun %v/%v\n", nodeTrunc, len(neighbors), runs, len(entries))
 	}
 	// write the entries map to the writefile.
 	writeJsonToFile(entries, writefile)
@@ -268,7 +269,6 @@ func decodeRecordBase64(b []byte) ([]byte, bool) {
 // getNeighbors returns the neighbors of a node.
 func getNeighbors(enr string) []enode.Node {
 	neighbors := []enode.Node{}
-	fmt.Printf("Getting neighbors for %s\n", enr)
 	// Take in ENR string, and parse it into a node object.
 	TargetNode, err := enode.Parse(enode.ValidSchemes, enr)
 	if err != nil {
@@ -282,7 +282,6 @@ func getNeighbors(enr string) []enode.Node {
 	// Find the neighbors of the target node.
 	enodes := disc.LookupPubkey(TargetNode.Pubkey())
 	for _, enode := range enodes {
-		fmt.Println(enode.String())
 		neighbors = append(neighbors, *enode)
 	}
 	return neighbors
