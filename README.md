@@ -22,11 +22,11 @@ This still needs debugging.
 ### Notes
 
 This is a very simple proof of concept.
-A future iteration of this concept would be used to:
+A future iteration of this POC would would:
 
   1. Use parallelism (goroutines) to traverse the list faster.
-  2. Combine the Crawler functionality of the devp2p library to connect the pipeline of Node traversal to neighborhood association.
-     This should be two seperate scripts, one running on the output of the other.
+  2. Fold in the Crawler functionality of the devp2p library to combine the pipeline of [DHT](https://en.wikipedia.org/wiki/Distributed_hash_table) Traversal and Node Discover with neighborhood association.
+     This should not be two seperate scripts, one running on the output of the other, but instead one unified process.
 
   A Final Iterations may be more complex: \
     A potential rebuild of the whole crawler concept, if I can discover the node, and associate it's neighbors in a struct at the same time
