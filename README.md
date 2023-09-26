@@ -26,16 +26,16 @@ A future iteration of this POC would:
 
   1. Use parallelism (goroutines) to traverse the list faster.
   2. Fold in the Crawler functionality of the devp2p library to combine the pipeline of [DHT](https://en.wikipedia.org/wiki/Distributed_hash_table) Traversal and Node Discover with neighborhood association.
-     This should not be two seperate scripts, one running on the output of the other, but instead one unified process.
+     This should not be two separate scripts, one running on the output of the other, but instead one unified process.
 
   A Final Iterations may be more complex: \
     A potential rebuild of the whole crawler concept, if I can discover the node, and associate it's neighbors in a struct at the same time
-    then having two seperate operations is unnecessary. This would look like a perpetually running service, updating node information continually. 
-    ensuring neighboorhood associations are up to date, and clearing any nodes that fall off of the node map, along with removing that node assocation
-    from other nodoes.
+    then having two separate operations is unnecessary. This would look like a perpetually running service, updating node information continually.
+    ensuring neighborhood associations are up to date, and clearing any nodes that fall off of the node map, along with removing that node association
+    from other nodes.
 
   This would most likely look like a series of goroutines, all working to perform different functions. One that regularly checks for errant nodes that
-  should be removed. Maybe a "graveyard" concept, where a routine starts up, scanes all nodes in the DB for neighbors matching what is in the graveyard
+  should be removed. Maybe a "graveyard" concept, where a routine starts up, scans all nodes in the DB for neighbors matching what is in the graveyard
   popping those nodes off of the list.
 
   There are a number of different concepts that could be introduced. Including layers that work on purely gathering statistics and exporting them as digestible
