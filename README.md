@@ -2,7 +2,7 @@
 
 ## 🚧 **Work in Progress** 🚧
 
-Crawls the ethereum network, finding nodes and appending a list of neighbors to each.
+>Crawls the ethereum network, finding nodes, and appending a list of neighbors to each
 
 This is a very early Proof of Concept. And it currently is not functioning.
 
