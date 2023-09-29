@@ -23,12 +23,7 @@ import (
 
 var (
 	jsonpath, writefile string
-	enrRecordPrefix     = []byte("enr:-")
 	runs                = 0
-)
-
-const (
-	cs = "\033[H\033[2J"
 )
 
 func init() {
@@ -37,6 +32,7 @@ func init() {
 	flag.Parse()
 }
 
+// nodeMap is a map of node IDs to ENR records.
 type nodeMap map[string]enrJSON
 
 // JSON struct representing an ENR record
@@ -51,32 +47,28 @@ type enrJSON struct {
 }
 
 func main() {
-	// Check if the jsonpath and writefile are empty.
-	// If they are empty, exit with a fatal error.
-	if jsonpath == "" {
-		log.Fatalf("jsonpath is empty")
+	// Ensure jsonpath and writefile are not empty.
+	switch {
+	case jsonpath == "":
+		log.Fatalf("json path is empty")
+	case writefile == "":
+		log.Fatalf("write path is empty")
 	}
-	if writefile == "" {
-		log.Fatalf("writepath is empty")
-	}
-
-	// // Create a nodetree to store the nodes and their neighbors.
-	// var nt nodetree
-
-	// Open the JSON file containing the bootnodes.
+	// Open the JSON Node file.
 	file, err := os.Open(jsonpath)
 	if err != nil {
 		log.Fatalf("Failed to open JSON file: %s", err.Error())
 	}
 
 	// Decode the JSON file into a list of ENR records.'
-	var entries nodeMap                          // map of string to enrJSON struct for each entry
+	var entries nodeMap
 	err = json.NewDecoder(file).Decode(&entries) // decode the JSON file into the entries map
 	if err != nil {
 		log.Fatalf("Failed to decode JSON file: %s", err.Error())
 	}
 
-	// populate target with the enode nodes from the JSON file.
+	// Iterate through the entries map, and add neighbors to each entry.
+	// Then write the entries map to the writefile.
 	for _, entry := range entries {
 		neighbors := getNeighbors(entry.Record)
 		entry.Neighbors = neighbors
@@ -85,6 +77,7 @@ func main() {
 		clearScreen()
 		fmt.Printf("ID: %v \nFound %v neighbors\nrun %v/%v\n", nodeTrunc, len(neighbors), runs, len(entries))
 	}
+
 	// write the entries map to the writefile.
 	writeJsonToFile(entries, writefile)
 }
@@ -114,26 +107,43 @@ func startV4(nodekey, bootnodes, nodedb, extaddr string) (*discover.UDPv4, disco
 	return disc, config, nil
 }
 
-// makeDiscoveryConfig creates a discovery configuration.
 // A discovery configuration is used to create a discovery node.
 func makeDiscoveryConfig(nodekey, nodedb string) (*enode.LocalNode, discover.Config) {
 	var cfg discover.Config
 
+	// If a nodekey is specified, use it as the node's private key.
 	if nodekey != "" {
+		// Parse the nodekey from hex string to an ECDSA private key.
+		// ICDSA is the elliptic curve digital signature algorithm.
 		key, err := crypto.HexToECDSA(nodekey)
 		if err != nil {
 			exit(fmt.Errorf("-%s: %v", nodekey, err))
 		}
+		// Set the node's private key.
 		cfg.PrivateKey = key
 	} else {
+		// If no nodekey is specified, generate a new private key.
+		// PrivateKey contains both the public and private key.
 		cfg.PrivateKey, _ = crypto.GenerateKey()
 	}
 
+	// If a nodedb is specified, use it as the node's database.
+	// TODO(Jeanhaley) Investigate this, it doesn't seem like we're passing a database.
+	// This could be why we're not getting neighbors.
 	dbpath := nodedb
+	// If no nodedb is specified, use the default database path.
+	//
+	// enode.OpenDB will run the following code in the case that dbpath is empty,
+	// and return a new memory-based database:
+	// 	if path == "" {
+	// 		return newMemoryDB() // default to memory-based database
+	// 	}
 	db, err := enode.OpenDB(dbpath)
 	if err != nil {
 		exit(err)
 	}
+	// Create a new local node.
+	// Takes in a database and a private/public key pair. Returns a local node.
 	ln := enode.NewLocalNode(db, cfg.PrivateKey)
 	return ln, cfg
 }
