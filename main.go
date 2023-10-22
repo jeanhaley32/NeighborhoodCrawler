@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"encoding/hex"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -29,13 +27,13 @@ type nodeMap map[string]enrJSON
 
 // JSON struct representing an ENR record
 type enrJSON struct {
-	Seq           uint64        `json:"seq"`
-	Record        string        `json:"record"`
-	Score         int           `json:"score"`
-	FirstResponse string        `json:"firstResponse"`
-	LastResponse  string        `json:"lastResponse"`
-	LastCheck     string        `json:"lastCheck"`
-	Neighbors     []*enode.Node `json:"neighbors"`
+	Seq           uint64       `json:"seq"`
+	Record        string       `json:"record"`
+	Score         int          `json:"score"`
+	FirstResponse string       `json:"firstResponse"`
+	LastResponse  string       `json:"lastResponse"`
+	LastCheck     string       `json:"lastCheck"`
+	Neighbors     []enode.Node `json:"neighbors"`
 }
 
 func main() {
@@ -62,11 +60,19 @@ func main() {
 	// Iterate through the entries map, and add neighbors to each entry.
 	// Then write the entries map to the writefile.
 	for _, entry := range entries {
-		entry.Neighbors = neighborfinder.Getneighbors(entry.Record)
+		pointerbucket := make([]*enode.Node, 0)
+		pointerbucket = neighborfinder.Getneighbors(entry.Record)
+		for _, pointer := range pointerbucket {
+			entry.Neighbors = append(entry.Neighbors, *pointer)
+		}
 		runs++
 		nodeTrunc := fmt.Sprintf("%v...%v", entry.Record[5:10], entry.Record[len(entry.Record)-5:])
 		clearScreen()
 		fmt.Printf("ID: %v \nFound %v neighbors\nrun %v/%v\n", nodeTrunc, len(entry.Neighbors), runs, len(entries))
+		fmt.Println("------------------------------------------------------------------")
+		for _, neighbor := range entry.Neighbors {
+			fmt.Printf("Neighbor: %v...%v\n", neighbor.ID().String()[5:10], neighbor.ID().String()[len(neighbor.ID().String())-5:])
+		}
 	}
 
 	// write the entries map to the writefile.
@@ -94,16 +100,6 @@ func exit(err interface{}) {
 	}
 	fmt.Fprintln(os.Stderr, err)
 	os.Exit(1)
-}
-
-// decodeRecordHex decodes a hex-encoded node record.
-func decodeRecordHex(b []byte) ([]byte, bool) {
-	if bytes.HasPrefix(b, []byte("0x")) {
-		b = b[2:]
-	}
-	dec := make([]byte, hex.DecodedLen(len(b)))
-	_, err := hex.Decode(dec, b)
-	return dec, err == nil
 }
 
 // Clears Terminal Screen.
