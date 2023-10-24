@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/Jeanhaley32/neighborfinder"
@@ -40,31 +39,33 @@ func main() {
 	// Ensure jsonpath and writefile are not empty.
 	switch {
 	case jsonpath == "":
-		log.Fatalf("json path is empty")
+		exit(fmt.Errorf("json path is empty"))
 	case writefile == "":
-		log.Fatalf("write path is empty")
+		exit(fmt.Errorf("write path is empty"))
 	}
 	// Open the JSON Node file.
 	file, err := os.Open(jsonpath)
 	if err != nil {
-		log.Fatalf("Failed to open JSON file: %s", err.Error())
+		exit(fmt.Errorf("Failed to open JSON file: %s", err.Error()))
 	}
 
 	// Decode the JSON file into a list of ENR records.'
 	var entries nodeMap
 	err = json.NewDecoder(file).Decode(&entries) // decode the JSON file into the entries map
 	if err != nil {
-		log.Fatalf("Failed to decode JSON file: %s", err.Error())
+		exit(fmt.Errorf("Failed to decode JSON file: %s", err.Error()))
 	}
 
 	// Iterate through the entries map, and add neighbors to each entry.
 	// Then write the entries map to the writefile.
-	for _, entry := range entries {
-		pointerbucket := make([]*enode.Node, 0)
-		pointerbucket = neighborfinder.Getneighbors(entry.Record)
-		for _, pointer := range pointerbucket {
-			entry.Neighbors = append(entry.Neighbors, *pointer)
+	for id, entry := range entries {
+		pointerbucket := neighborfinder.Getneighbors(entry.Record)
+		neighbors := make([]enode.Node, len(pointerbucket))
+		for i, pointer := range pointerbucket {
+			neighbors[i] = *pointer
 		}
+		entry.Neighbors = append(entry.Neighbors, neighbors...)
+		entries[id] = entry
 		runs++
 		nodeTrunc := fmt.Sprintf("%v...%v", entry.Record[5:10], entry.Record[len(entry.Record)-5:])
 		clearScreen()
@@ -75,7 +76,8 @@ func main() {
 		}
 	}
 
-	// write the entries map to the writefile.
+	clearScreen()
+	// // write the entries map to the writefile.
 	writeJsonToFile(entries, writefile)
 }
 
@@ -83,13 +85,14 @@ func main() {
 func writeJsonToFile(d any, outputfile string) {
 	file, err := os.Create(outputfile)
 	if err != nil {
-		log.Fatalf("Failed to create file: %s", err.Error())
+		exit(fmt.Errorf("Failed to create JSON file: %s", err.Error()))
 	}
+	defer file.Close()
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")
 	err = encoder.Encode(d)
 	if err != nil {
-		log.Fatalf("Failed to encode JSON file: %s", err.Error())
+		exit(fmt.Errorf("Failed to encode JSON file: %s", err.Error()))
 	}
 }
 
