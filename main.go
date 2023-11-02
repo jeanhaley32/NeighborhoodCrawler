@@ -78,22 +78,27 @@ func main() {
 
 	clearScreen()
 	// // write the entries map to the writefile.
-	writeJsonToFile(entries, writefile)
+	err = writeJsonToFile(entries, writefile)
+	if err != nil {
+		exit(err)
+	}
+
 }
 
 // writeJsonToFile writes a JSON file to the writefile.
-func writeJsonToFile(d any, outputfile string) {
+func writeJsonToFile(d any, outputfile string) error {
 	file, err := os.Create(outputfile)
 	if err != nil {
-		exit(fmt.Errorf("Failed to create JSON file: %s", err.Error()))
+		return fmt.Errorf("failed to create JSON file: %s", err.Error())
 	}
 	defer file.Close()
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")
 	err = encoder.Encode(d)
 	if err != nil {
-		exit(fmt.Errorf("Failed to encode JSON file: %s", err.Error()))
+		return fmt.Errorf("failed to encode JSON file: %s", err.Error())
 	}
+	return nil
 }
 
 // exit prints the error to stderr and exits with status 1.
